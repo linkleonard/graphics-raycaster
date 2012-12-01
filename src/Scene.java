@@ -139,20 +139,34 @@ class Scene
 
         // For each object
         Enumeration e = objects.elements();
+        intersection.t = Double.MAX_VALUE;
         while (e.hasMoreElements()) {
             Shape current = (Shape)e.nextElement();
-
-            // ...
-
+            	
+            // Transform ray to object space
+            Ray copy = new Ray(r);
+            current.MInverse.transform(copy.origin);
+            current.MInverse.transform(copy.direction);
+            
             // Find closest intersection point
-
-            // ...
+            // Don't perform all calculations unless we're sure its a hit
+            if (current.hit(copy, intersection, false, epsilon)) {
+            	current.hit(copy, intersection, true, epsilon);
+            }
+            
         }
        
         if (intersection.getHitObject() != null) {
             // Transform intersection into world space
 
-            // ...
+            // Transform the intersection point
+        	intersection.hitObject.M.transform(intersection.hitPoint);
+        	
+        	// Transform the normal (Make sure its normalized!)
+        	intersection.hitObject.MTInverse.transform(intersection.normal);
+        	intersection.normal.normalize();
+        	
+        	return true;
         }
 
         return false;

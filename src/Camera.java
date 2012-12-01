@@ -134,7 +134,6 @@ class Camera extends RaytracerObject
     	ray.direction.x += x * u.x + y * v.x - near * n.x;
     	ray.direction.y += x * u.y + y * v.y - near * n.y;
     	ray.direction.z += x * u.z + y * v.z - near * n.z;
-    	
     	ray.direction.normalize();
     	
     	ray.origin.x = 0;

@@ -1,0 +1,42 @@
+[ YOUR NAME ]
+CS 428 - Project 4
+
+=============================================================================
+This is a template description file.  Please fill in by replacing the []'s
+with relevant content (write a *single* sentence description for each method,
+bug, extension, etc...).  Then, remove any leftover []'s.
+=============================================================================
+
+Incomplete parts:
+-----------------
+  - [ first part not completed (or "none") ]
+  - [ second one ...]
+
+Bugs in code:
+-------------
+  - [ description of known bug (or "none") ]
+  - [ second one ... ]
+
+Extensions/extra credit completed:
+----------------------------------
+  - [ description of first extension (or "none") ]
+  - [ second one ... ]
+
+================================================================
+
+Methods completed or changed
+----------------------------
+
+Camera.java
+- pixelRay():
+
+Scene.java
+- castRay():
+- intersects():
+- shadowRay():
+- shadowTint():
+
+Light.java
+- compute():
+
+[ ... add any other methods you create/modify ... ]

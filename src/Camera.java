@@ -136,17 +136,10 @@ class Camera extends RaytracerObject
     	ray.direction.z += x * u.z + y * v.z - near * n.z;
     	ray.direction.normalize();
     	
-    	ray.origin.x = 0;
-    	ray.origin.y = 0;
+    	ray.origin.x = x;
+    	ray.origin.y = y;
     	ray.origin.z = -near;
     	
-    	// This must be normalized
-    	// We use a range test because of precision errors
-    	// If the squared length is in range, then the length must be in range.
-    	double minlen = 0.999999999999999;
-    	double maxlen = 1.000000000000001;
-    	assert(minlen < ray.direction.lengthSquared());
-    	assert(ray.direction.lengthSquared() < maxlen);
         return ray;
     }
 

@@ -64,14 +64,6 @@ class Scene
     	
         // Set up camera for this image resolution
         camera.setup(width, height);
-        
-        
-        // Test the ray generation to make sure it works correctly
-        Ray originRay = camera.pixelRay(0, 0);
-        Point3d expectedOrigin = new Point3d(0, 0, -camera.near);
-        Vector3d expectedDirection = new Vector3d(0, 0, -1);
-        assert(originRay.origin.equals(expectedOrigin));
-        assert(originRay.direction.equals(expectedDirection));
 
         // Make a new image
         image = new RGBImage(width, height);

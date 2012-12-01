@@ -58,6 +58,13 @@ public class CameraTest {
 	public void testPixelRay() {
         originRayTest();
         
+        camera.near = 0.5;
+        originRayTest();
+        
+        camera.near = 2.0;
+        originRayTest();
+        
+        
 	}
 
 }

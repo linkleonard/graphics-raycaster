@@ -130,16 +130,24 @@ class Camera extends RaytracerObject
     {
         // Create and compute ray through pixel
     	Ray ray = new Ray();
-    	ray.direction.x = 0;
-    	ray.direction.y = 0;
-    	ray.direction.z = -1;
+    	ray.direction.set(0, 0, 0);
+    	ray.direction.x += x * u.x + y * v.x - near * n.x;
+    	ray.direction.y += x * u.y + y * v.y - near * n.y;
+    	ray.direction.z += x * u.z + y * v.z - near * n.z;
+    	
+    	ray.direction.normalize();
     	
     	ray.origin.x = 0;
     	ray.origin.y = 0;
     	ray.origin.z = -near;
     	
     	// This must be normalized
-    	assert(ray.direction.lengthSquared() == 1);
+    	// We use a range test because of precision errors
+    	// If the squared length is in range, then the length must be in range.
+    	double minlen = 0.999999999999999;
+    	double maxlen = 1.000000000000001;
+    	assert(minlen < ray.direction.lengthSquared());
+    	assert(ray.direction.lengthSquared() < maxlen);
         return ray;
     }
 

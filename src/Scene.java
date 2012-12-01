@@ -116,7 +116,10 @@ class Scene
             //    the lighting computation there (sending out a shadow feeler
             //    ray to see if light is visible from intersection point)
 
+            Vector3d lightColor = new Vector3d();
             // ...
+            for (int i = 0; i < lights.size(); ++i)
+            	lightColor.add(lights.get(i).compute(isect, lights.get(i).color, r));
 
             // -- Call castRay() recursively to handle contribution
             //    from reflection and refraction
@@ -124,7 +127,8 @@ class Scene
             // ...
 
             // Placeholder (just use diffuse color)
-            color.set(mat.getKd());
+            color.set(lightColor);
+//            color.set(mat.getKd());
         }
 
         return color;

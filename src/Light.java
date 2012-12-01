@@ -139,10 +139,37 @@ class Light extends RaytracerObject
         // ...
 
         // Compute color
+        Vector3d lightDirection = new Vector3d();
+        r.origin.get(lightDirection);
+        lightDirection.sub(intersection.hitPoint);
+        lightDirection.normalize();
+        
+        // Ambient component
+        Vector3d color = new Vector3d(mat.getKa());
+        
+        // Diffuse component
+        Vector3d diffuse = new Vector3d(mat.getKd());
+        double dotval = intersection.getNormal().dot(lightDirection);
+        diffuse.scale(Math.max(0, dotval));
+        /*
+        // Attenuate light
+        double dsquared = intersection.hitPoint.distanceSquared(r.origin);
+        diffuse.scale(1 / (attenuation.x + attenuation.y * Math.sqrt(dsquared) + attenuation.z * dsquared));
+        */
+        color.add(diffuse);
+        
+        /*
+     	// Specular component
+        Vector3d specular = mat.getKs();
+        if (dotval > 0) {
+        	Vector3d reflect = new Vector3d();
+        	Tools.reflect(reflect, lightDirection, intersection.getNormal());
+        	specular.scale(reflect.dot(r.direction));
+        }
+        */
+        
+        return color;
 
         // ...
-
-        // Placeholder (always return white)
-        return new Vector3d(1,1,1);
     }
 }

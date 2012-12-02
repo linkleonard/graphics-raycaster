@@ -153,10 +153,7 @@ class Scene
             current.MInverse.transform(copy.direction);
             
             // Find closest intersection point
-            // Don't perform all calculations unless we're sure its a hit
-            if (current.hit(copy, intersection, false, epsilon)) {
-            	current.hit(copy, intersection, true, epsilon);
-            }
+        	current.hit(copy, intersection, true, epsilon);
             
         }
        

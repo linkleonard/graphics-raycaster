@@ -183,7 +183,7 @@ class Light extends RaytracerObject
         
         // Account for texture
         if (mat.hasTexture())
-        	Tools.termwiseMul3d(color, mat.getTextureImageColor(intersection.u, intersection.v));
+        	Tools.termwiseMul3d(color, mat.getTextureColor(intersection.u, intersection.v));
         
         return color;
 

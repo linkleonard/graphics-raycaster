@@ -113,7 +113,6 @@ class Scene
             // -- Ray hit object as specified in isect
 
             Material mat = isect.getHitObject().getMaterialRef();
-            Shape shape = isect.getHitObject();
 
             // -- Compute contribution to this pixel for each light by doing
             //    the lighting computation there (sending out a shadow feeler
@@ -125,7 +124,6 @@ class Scene
             	Vector3d tint = shadowRay(isect, lights.get(i));
             	
             	// Restore hit object before computing color
-            	isect.hitObject = shape;
             	Vector3d lightColor = lights.get(i).compute(isect, tint, r);
             	totalLightColor.add(lightColor);
             }
@@ -137,7 +135,6 @@ class Scene
 
             // Placeholder (just use diffuse color)
             color.set(totalLightColor);
-//            color.set(mat.getKd());
         }
 
         return color;
@@ -195,18 +192,21 @@ class Scene
 
         // Compute shadow ray and call shadowTint() or shadowTintDirectional()
 
-    	Vector3d lightDirection; 
+    	Vector3d lightDirection = new Vector3d();
+    	
+    	// This is not a directional light
 		if (light.getDirection() == null) {
+			// Construct a vector going from Hit Point -> Light
 			lightDirection = new Vector3d(light.getPosition());
 			lightDirection.sub(intersection.getHitPoint());
 			lightDirection.normalize();
 		} else {
-			lightDirection = light.getDirection();
-			lightDirection.negate();
+			// Why don't we need to negate this value?  Isn't this pointing from Light -> Point?
+			lightDirection = new Vector3d(light.getDirection());
 		}
-    	Ray r = new Ray(intersection.getHitPoint(), lightDirection);
+    	Ray shadow = new Ray(intersection.getHitPoint(), lightDirection);
 
-    	return shadowTint(r, intersection.t);
+    	return shadowTint(shadow, intersection.t);
     }
 
     /** determine how the light is tinted along a particular ray which
@@ -241,8 +241,9 @@ class Scene
             current.MInverse.transform(copy.origin);
             current.MInverse.transform(copy.direction);
             copy.direction.normalize();
+            
             if (current.hit(copy, intersection, false, epsilon)) {
-            	Vector3d kt = intersection.hitObject.getMaterialRef().getKt();
+            	Vector3d kt = new Vector3d(intersection.hitObject.getMaterialRef().getKt());
             	Tools.termwiseMul3d(tint, kt);
             }
         }

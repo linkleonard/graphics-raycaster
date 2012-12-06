@@ -138,54 +138,59 @@ class Light extends RaytracerObject
         
         // ...
 
-        Vector3d direction = this.direction;
-        if (direction == null) {
-        	direction = new Vector3d(position);
-        	direction.sub(intersection.hitPoint);
-        	direction.normalize();
+        Vector3d lightDir = new Vector3d();
+        if (this.direction == null) {
+        	lightDir.set(this.position);
+        	lightDir.sub(intersection.hitPoint);
+        } else {
+        	lightDir.set(this.direction);
         }
+        lightDir.normalize();
         
         // Compute color
         
         Vector3d color = new Vector3d();
         // Ambient component
-        Vector3d ambient = mat.getKa();
+        Vector3d ambient = new Vector3d(mat.getKa());
         color.add(ambient);
         
         // Diffuse component
         Vector3d diffuse = new Vector3d(mat.getKd());
         
-        double dotval = intersection.getNormal().dot(direction);
+        double dotval = intersection.getNormal().dot(lightDir);
         diffuse.scale(Math.max(0, dotval));
-        
+        /*
         // Attenuate light
         if (this.direction == null) {
 	        double dsquared = intersection.hitPoint.distanceSquared(r.origin);
 	        diffuse.scale(1 / (attenuation.x + attenuation.y * Math.sqrt(dsquared) + attenuation.z * dsquared));
         }
+        */
         Tools.termwiseMul3d(diffuse, tint);
         // Account for texture
-        if (mat.hasTexture())
+        /*
+        if (mat.hasTexture()) {
         	Tools.termwiseMul3d(diffuse, mat.getTextureColor(intersection.u, intersection.v));
-
+        }
+*/
         color.add(diffuse);
         
         
      	// Specular component
-        /*
-        Vector3d specular = mat.getKs();
+        
+        Vector3d specular = new Vector3d(mat.getKs());
         if (dotval >= 0) {
         	// The reflected light ray
         	Vector3d reflect = new Vector3d();
-        	Tools.reflect(reflect, direction, intersection.getNormal());
-        	
+        	Tools.reflect(reflect, lightDir, intersection.getNormal());
+        	reflect.negate();
         	dotval = reflect.dot(r.direction);
         	dotval = Math.max(0, dotval);
         	dotval = Math.pow(dotval, mat.getShiny());
         	specular.scale(dotval);
         	color.add(specular);
         }
-        */
+        
         
         return color;
 

@@ -8,6 +8,8 @@ import java.util.*;
 import java.text.ParseException;
 import java.lang.reflect.*;
 import java.io.*;
+
+import javax.swing.text.Position;
 import javax.vecmath.*;
 
 class Scene
@@ -116,10 +118,13 @@ class Scene
             //    the lighting computation there (sending out a shadow feeler
             //    ray to see if light is visible from intersection point)
 
-            Vector3d lightColor = new Vector3d();
+            Vector3d totalLightColor= new Vector3d();
             // ...
-            for (int i = 0; i < lights.size(); ++i)
-            	lightColor.add(lights.get(i).compute(isect, lights.get(i).color, r));
+            for (int i = 0; i < lights.size(); ++i) {
+            	Vector3d tint = shadowRay(isect, lights.get(i));
+            	Vector3d lightColor = lights.get(i).compute(isect, tint, r);
+            	totalLightColor.add(lightColor);
+            }
 
             // -- Call castRay() recursively to handle contribution
             //    from reflection and refraction
@@ -127,7 +132,7 @@ class Scene
             // ...
 
             // Placeholder (just use diffuse color)
-            color.set(lightColor);
+            color.set(totalLightColor);
 //            color.set(mat.getKd());
         }
 
@@ -186,6 +191,38 @@ class Scene
 
         // Compute shadow ray and call shadowTint() or shadowTintDirectional()
 
+    	Vector3d lightDirection; 
+		if (light.getDirection() == null) {
+			lightDirection = new Vector3d(light.getPosition());
+			lightDirection.sub(intersection.getHitPoint());
+			lightDirection.normalize();
+		} else {
+			lightDirection = light.getDirection();
+			lightDirection.negate();
+		}
+    	Ray r = new Ray(intersection.getHitPoint(), lightDirection);
+
+    	// For each object
+        Enumeration e = objects.elements();
+        intersection.t = Double.MAX_VALUE;
+        while (e.hasMoreElements()) {
+            Shape current = (Shape)e.nextElement();
+            	
+            // Transform ray to object space
+            Ray copy = new Ray(r);
+            current.MInverse.transform(copy.origin);
+            current.MInverse.transform(copy.direction);
+            copy.direction.normalize();
+            
+            // Find closest intersection point
+        	current.hit(copy, intersection, false, epsilon);
+            
+        }
+       
+        if (intersection.getHitObject() != null) {
+            return new Vector3d();
+        }
+    	
         // ...
 
         // Placeholder (not blocked)

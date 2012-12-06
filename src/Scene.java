@@ -113,6 +113,7 @@ class Scene
             // -- Ray hit object as specified in isect
 
             Material mat = isect.getHitObject().getMaterialRef();
+            Shape shape = isect.getHitObject();
 
             // -- Compute contribution to this pixel for each light by doing
             //    the lighting computation there (sending out a shadow feeler
@@ -122,6 +123,9 @@ class Scene
             // ...
             for (int i = 0; i < lights.size(); ++i) {
             	Vector3d tint = shadowRay(isect, lights.get(i));
+            	
+            	// Restore hit object before computing color
+            	isect.hitObject = shape;
             	Vector3d lightColor = lights.get(i).compute(isect, tint, r);
             	totalLightColor.add(lightColor);
             }
@@ -202,31 +206,7 @@ class Scene
 		}
     	Ray r = new Ray(intersection.getHitPoint(), lightDirection);
 
-    	// For each object
-        Enumeration e = objects.elements();
-        intersection.t = Double.MAX_VALUE;
-        while (e.hasMoreElements()) {
-            Shape current = (Shape)e.nextElement();
-            	
-            // Transform ray to object space
-            Ray copy = new Ray(r);
-            current.MInverse.transform(copy.origin);
-            current.MInverse.transform(copy.direction);
-            copy.direction.normalize();
-            
-            // Find closest intersection point
-        	current.hit(copy, intersection, false, epsilon);
-            
-        }
-       
-        if (intersection.getHitObject() != null) {
-            return new Vector3d();
-        }
-    	
-        // ...
-
-        // Placeholder (not blocked)
-        return new Vector3d(1,1,1);
+    	return shadowTint(r, intersection.t);
     }
 
     /** determine how the light is tinted along a particular ray which
@@ -245,15 +225,26 @@ class Scene
         Vector3d tint = new Vector3d(1.0, 1.0, 1.0);
 
         // ...
-
+        
         // For each object
         Enumeration e = objects.elements();
+        ISect intersection = new ISect();
         while (e.hasMoreElements()) {
             Shape current = (Shape)e.nextElement();
 
             // ...
 
             // ... find product of Kt values that intersect this ray
+            
+            // Transform ray to object space
+            Ray copy = new Ray(r);
+            current.MInverse.transform(copy.origin);
+            current.MInverse.transform(copy.direction);
+            copy.direction.normalize();
+            if (current.hit(copy, intersection, false, epsilon)) {
+            	Vector3d kt = intersection.hitObject.getMaterialRef().getKt();
+            	Tools.termwiseMul3d(tint, kt);
+            }
         }
 
         return tint;

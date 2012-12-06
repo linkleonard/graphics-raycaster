@@ -150,7 +150,6 @@ class Light extends RaytracerObject
         Vector3d color = new Vector3d();
         // Ambient component
         Vector3d ambient = mat.getKa();
-//        Tools.termwiseMul3d(ambient, mat.getKa());
         color.add(ambient);
         
         // Diffuse component
@@ -171,18 +170,18 @@ class Light extends RaytracerObject
 
         color.add(diffuse);
         
-        /*
+        
      	// Specular component
+        /*
         Vector3d specular = mat.getKs();
         if (dotval >= 0) {
-        if (specular.lengthSquared() > 0) {
         	// The reflected light ray
         	Vector3d reflect = new Vector3d();
         	Tools.reflect(reflect, direction, intersection.getNormal());
         	
         	dotval = reflect.dot(r.direction);
-//        	dotval = Math.max(0, dotval);
-//        	dotval = Math.pow(dotval, mat.getShiny());
+        	dotval = Math.max(0, dotval);
+        	dotval = Math.pow(dotval, mat.getShiny());
         	specular.scale(dotval);
         	color.add(specular);
         }

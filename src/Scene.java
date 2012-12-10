@@ -145,12 +145,13 @@ class Scene
      */
     private boolean intersects(Ray r, ISect intersection)
     {
-        // ...
-
+    	ISect closestIntersection = new ISect();
+    	closestIntersection.t = Double.MAX_VALUE;
+    	
         // For each object
         Enumeration e = objects.elements();
-        intersection.t = Double.MAX_VALUE;
         while (e.hasMoreElements()) {
+        	
             Shape current = (Shape)e.nextElement();
             	
             // Transform ray to object space
@@ -159,10 +160,13 @@ class Scene
             current.MInverse.transform(copy.direction);
             
             // Find closest intersection point
-        	current.hit(copy, intersection, true, epsilon);
-            
+        	if (current.hit(copy, intersection, true, epsilon) && intersection.t < closestIntersection.t) {
+        		closestIntersection.set(intersection);
+        	}
         }
-       
+        // Make sure we point to the closest intersection point
+        intersection.set(closestIntersection);
+        
         if (intersection.getHitObject() != null) {
             // Transform intersection into world space
 

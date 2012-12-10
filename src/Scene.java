@@ -118,23 +118,29 @@ class Scene
             //    the lighting computation there (sending out a shadow feeler
             //    ray to see if light is visible from intersection point)
 
-            Vector3d totalLightColor= new Vector3d();
             // ...
             for (int i = 0; i < lights.size(); ++i) {
             	Vector3d tint = shadowRay(isect, lights.get(i));
             	
             	// Restore hit object before computing color
             	Vector3d lightColor = lights.get(i).compute(isect, tint, r);
-            	totalLightColor.add(lightColor);
+            	color.add(lightColor);
             }
 
-            // -- Call castRay() recursively to handle contribution
-            //    from reflection and refraction
-
+            Vector3d rayDirection = new Vector3d(r.direction);
+            
+            // ==== Reflection Component ====
+            // Transform ray to correct direction
+            Tools.reflect(r.direction, rayDirection, isect.getNormal());
+            r.origin.set(isect.getHitPoint());
+            r.direction.negate();
+            
+            Vector3d colorReflect = castRay(r, depth + 1);
+            Tools.termwiseMul3d(colorReflect, mat.getKs());
+            color.add(colorReflect);
+            
+            r.direction.set(rayDirection);
             // ...
-
-            // Placeholder (just use diffuse color)
-            color.set(totalLightColor);
         }
 
         return color;

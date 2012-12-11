@@ -49,8 +49,7 @@ class Scene
     // Bottom-Right: 1, 1
     Vector3d[][] diagonals;
     
-    double baseColorWeight = 0.5;
-    double firstDegreeOnlyColorWeight = 0.125; 
+    double colorDifferenceSquared = 0.025;
     
     // Constructor
     public Scene()
@@ -174,6 +173,7 @@ class Scene
     		};
     		
     		if (!areColorsSimilar(colors)) {
+//    			return new Vector3d();
     			depth += 1;
     			delta *= 0.5;
     			double nextDelta = delta * 0.5;
@@ -197,14 +197,13 @@ class Scene
     
     
     private boolean areColorsSimilar(Vector3d[] colors) {
-    	double radiusSquared = Math.pow(0.5, 2);
     	Vector3d baseColor = new Vector3d();
     	for (int i = 0; i < colors.length; ++i) {
     		for (int j = 0; j < colors.length; ++j) { 
     			if (i != j) {
     				baseColor.set(colors[i]);
     				baseColor.sub(colors[j]);
-    				if (baseColor.lengthSquared() > radiusSquared)
+    				if (baseColor.lengthSquared() > colorDifferenceSquared)
     					return false;
     			}
     		}

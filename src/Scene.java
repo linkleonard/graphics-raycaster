@@ -108,6 +108,9 @@ class Scene
         Vector3d color = new Vector3d();
         ISect isect = new ISect();
 
+        Vector3d rayDirection = new Vector3d();
+        rayDirection.set(r.direction);
+        
         // Check if the ray hit any object (or recursion depth was exceeded)
         if (depth <= recursionDepth && intersects(r, isect)) {
             // -- Ray hit object as specified in isect
@@ -126,21 +129,39 @@ class Scene
             	Vector3d lightColor = lights.get(i).compute(isect, tint, r);
             	color.add(lightColor);
             }
-
-            Vector3d rayDirection = new Vector3d(r.direction);
             
             // ==== Reflection Component ====
-            // Transform ray to correct direction
-            Tools.reflect(r.direction, rayDirection, isect.getNormal());
-            r.origin.set(isect.getHitPoint());
-            r.direction.negate();
+            // Don't bother reflecting if the object is non reflective
+            if (mat.getKs().lengthSquared() > 0) {
+	            // Transform ray to correct direction
+	            Tools.reflect(r.direction, rayDirection, isect.getNormal());
+	            r.origin.set(isect.getHitPoint());
+	            r.direction.negate();
+	            
+	            Vector3d colorReflect = castRay(r, depth + 1);
+	            Tools.termwiseMul3d(colorReflect, mat.getKs());
+	            color.add(colorReflect);
+            }
             
-            Vector3d colorReflect = castRay(r, depth + 1);
-            Tools.termwiseMul3d(colorReflect, mat.getKs());
-            color.add(colorReflect);
-            
-            r.direction.set(rayDirection);
-            // ...
+            // ==== RefractionComponent ====
+            // Don't bother refracting if the object is opaque
+            if (mat.getKt().lengthSquared() > 0) {
+            	r.origin.set(isect.getHitPoint());
+	            r.direction.set(rayDirection);
+	            
+	            // Are we entering? The dot product will be negative
+	            if (isect.getNormal().dot(rayDirection) < 0) {
+	            	Tools.refract(r.direction, rayDirection, isect.getNormal(), 1, mat.index);
+	            	
+	            } else {
+	            	isect.getNormal().negate();
+	            	Tools.refract(r.direction, rayDirection, isect.getNormal(), mat.index, 1);
+	            	isect.getNormal().negate();
+	            }
+	            Vector3d colorRefract = castRay(r, depth + 1);
+	            Tools.termwiseMul3d(colorRefract, mat.getKt());
+	            color.add(colorRefract);
+            }
         }
 
         return color;

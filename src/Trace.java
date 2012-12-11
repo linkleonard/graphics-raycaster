@@ -9,6 +9,7 @@ import java.lang.reflect.*;
 
 class Trace
 {
+	static boolean adaptive = false;
     static boolean verbose = true;
 
     public static void main(String arguments[])
@@ -33,6 +34,8 @@ class Trace
                     height = (new Integer(arguments[++i])).intValue();
                 } else if (arguments[i].compareTo("-quiet")==0) {
                     verbose = false;
+                } else if (arguments[i].compareTo("-adaptive")==0) {
+                	adaptive = true;
                 } else if (arguments[i].charAt(0) == '-') {
                     printUsage();
                     System.exit(0);
@@ -51,8 +54,12 @@ class Trace
                 // Set up the scene
                 s.setup();
 		
+                long startTime = System.currentTimeMillis();
+                
                 // Render the image
-                RGBImage i = s.render(width, height, verbose);
+                RGBImage i = s.render(width, height, verbose, adaptive);
+                
+                System.out.println(String.format("Rendering took: %d ms", System.currentTimeMillis() - startTime));
 		
                 // Save the image
                 i.write(outputFileName);

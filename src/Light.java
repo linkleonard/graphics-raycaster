@@ -148,36 +148,31 @@ class Light extends RaytracerObject
         lightDir.normalize();
         
         // Compute color
-        
         Vector3d color = new Vector3d();
         // Ambient component
-        Vector3d ambient = new Vector3d(mat.getKa());
-        color.add(ambient);
+        color.set(mat.getKa());
         
         // Diffuse component
         Vector3d diffuse = new Vector3d(mat.getKd());
-        
         double dotval = intersection.getNormal().dot(lightDir);
         diffuse.scale(Math.max(0, dotval));
-        /*
+        Tools.termwiseMul3d(diffuse, tint);
+        
         // Attenuate light
         if (this.direction == null) {
 	        double dsquared = intersection.hitPoint.distanceSquared(r.origin);
 	        diffuse.scale(1 / (attenuation.x + attenuation.y * Math.sqrt(dsquared) + attenuation.z * dsquared));
         }
-        */
-        Tools.termwiseMul3d(diffuse, tint);
+        
         // Account for texture
-        /*
         if (mat.hasTexture()) {
         	Tools.termwiseMul3d(diffuse, mat.getTextureColor(intersection.u, intersection.v));
         }
-*/
+
         color.add(diffuse);
         
         
      	// Specular component
-        
         Vector3d specular = new Vector3d(mat.getKs());
         if (dotval >= 0) {
         	// The reflected light ray

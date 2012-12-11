@@ -42,6 +42,10 @@ class Material extends RaytracerObject
     // Checker specification
     Vector3d checkerColor1     = null;
     Vector3d checkerColor2     = null;
+    
+    // Checker specification
+    Vector3d spottedColor1     = null;
+    Vector3d spottedColor2     = null;
 
     // ----------------------------------------------------------------------
 
@@ -88,6 +92,7 @@ class Material extends RaytracerObject
 
 	addSpecSpecial("texture", "setTextureSpec", "readTextureSpec");
 	addSpecSpecial("checker", "setCheckerSpec", "readCheckerSpec");
+	addSpecSpecial("spotted", "setSpottedSpec", "readSpottedSpec");
 
 	// read the content of this object
 	read(tokenizer);
@@ -139,7 +144,7 @@ class Material extends RaytracerObject
     /** Check if any valid texture is present */
     public boolean hasTexture()
     {
-	return textureImage != null || checkerColor1 != null;
+	return textureImage != null || checkerColor1 != null || spottedColor1 != null;
     }
 
     /** returns the texture color corresponding to the u, v coordinates */
@@ -147,6 +152,8 @@ class Material extends RaytracerObject
     {
 	if (checkerColor1 != null) {
 	    return getCheckerColor(u,v);
+	} else if (spottedColor1 != null) {
+		return getSpottedColor(u, v);
 	} else if (textureImage != null) {
 	    return getTextureImageColor(u,v);
 	} else {
@@ -214,10 +221,44 @@ class Material extends RaytracerObject
     {
 	double scu = textureScaleU, scv = textureScaleV;
 
-	if ((int)(Math.floor(u * scu) + Math.floor(v * scv)) % 2 == 0) {
+	if ((int)(Math.floor(u * scu) + Math.floor(v * scv)) % 2 < 0) {
 	    return checkerColor1;
 	} else {
 	    return checkerColor2;
+	}
+    }
+    
+    //------------------------------------------------------------------------
+    // Procedural spot texture
+
+    public static Vector readSpottedSpec(StreamTokenizer tokenizer)
+        throws ParseException, IOException
+    {
+	Vector<Object> v = new Vector<Object>();
+
+	// checker = color1 color2 uScale vScale
+	v.addElement(Parser.readVector3d(tokenizer));
+	v.addElement(Parser.readVector3d(tokenizer));
+	v.addElement(Parser.readDouble(tokenizer));
+	v.addElement(Parser.readDouble(tokenizer));
+
+	return v;
+    }
+    public void setSpottedSpec(Vector v)
+    {
+	spottedColor1   = (Vector3d)v.elementAt(0);
+	spottedColor2   = (Vector3d)v.elementAt(1);
+	textureScaleU   = ((Double)v.elementAt(2)).doubleValue();
+	textureScaleV   = ((Double)v.elementAt(3)).doubleValue();
+    }
+    public Vector3d getSpottedColor(double u, double v)
+    {
+	double scu = textureScaleU, scv = textureScaleV;
+
+	if ((int)(Math.floor(u * scu) + Math.floor(v * scv)) % 2 == 0) {
+	    return spottedColor1;
+	} else {
+	    return spottedColor2;
 	}
     }
 

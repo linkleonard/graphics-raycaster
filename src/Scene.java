@@ -184,8 +184,7 @@ class Scene
     		}
     			
     		
-    		Vector3d color = new Vector3d();
-    		color.add(topLeft);
+    		Vector3d color = new Vector3d(topLeft);
     		color.add(topRight);
     		color.add(bottomLeft);
     		color.add(bottomRight);
@@ -209,15 +208,6 @@ class Scene
     		}
     	}
     	return true;
-    }
-    
-    /*
-     * General ray-cast.
-     */
-    private Vector3d adaptiveCastRay(Ray r, int depth, boolean adaptive) {
-    	Vector3d color = new Vector3d();
-		color.add(castRay(r, depth, adaptive));
-		return color;
     }
     
     /** compute pixel color for ray tracing computation for ray r
@@ -258,7 +248,7 @@ class Scene
 	            r.origin.set(isect.getHitPoint());
 	            r.direction.negate();
 	            
-	            Vector3d colorReflect = adaptiveCastRay(r, depth + 1, adaptive);
+	            Vector3d colorReflect = castRay(r, depth + 1, adaptive);
 	            Tools.termwiseMul3d(colorReflect, mat.getKs());
 	            color.add(colorReflect);
             }
@@ -278,7 +268,7 @@ class Scene
 	            	Tools.refract(r.direction, rayDirection, isect.getNormal(), mat.index, 1);
 	            	isect.getNormal().negate();
 	            }
-	            Vector3d colorRefract = adaptiveCastRay(r, depth + 1, adaptive);
+	            Vector3d colorRefract = castRay(r, depth + 1, adaptive);
 	            Tools.termwiseMul3d(colorRefract, mat.getKt());
 	            color.add(colorRefract);
             }

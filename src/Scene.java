@@ -242,7 +242,9 @@ class Scene
             
             // ==== Reflection Component ====
             // Don't bother reflecting if the object is non reflective
-            if (mat.getKs().lengthSquared() > 0) {
+            if (mat.getKs().x != 0 ||
+        		mat.getKs().y != 0 ||
+        		mat.getKs().z != 0) {
 	            // Transform ray to correct direction
 	            Tools.reflect(r.direction, rayDirection, isect.getNormal());
 	            r.origin.set(isect.getHitPoint());
@@ -255,7 +257,9 @@ class Scene
             
             // ==== RefractionComponent ====
             // Don't bother refracting if the object is opaque
-            if (mat.getKt().lengthSquared() > 0) {
+            if (mat.getKt().x != 0 ||
+        		mat.getKt().y != 0 ||
+        		mat.getKt().z != 0) {
             	r.origin.set(isect.getHitPoint());
 	            r.direction.set(rayDirection);
 	            

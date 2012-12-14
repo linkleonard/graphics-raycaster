@@ -1,0 +1,18 @@
+translate { (0 0 -3) }
+
+material {
+   name = flat
+   ka = (0.1 0.1 0.1)
+   kd = (0.5 0.6 0.4)
+   ks = (0 0 0)
+   hexagonal = (0.9 0.3 0.3) (0.3 0.9 0.3) 10 10
+}
+
+light {
+   direction = (2 3 5)
+   color=(1 1 1)
+}
+
+push {}
+  box { material = flat }
+pop{}

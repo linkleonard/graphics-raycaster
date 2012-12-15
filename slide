@@ -1,21 +1,14 @@
 translate { (0 0 -10) }
 
 material {
-   name = glass
-   ka = (0.01 0.01 0.01)
-   kd = (0 0 0)
-   ks = (0.1 0.1 0.1)
-   kt = (1 1 1)
-   index = 1.015
-   shiny = 50
-}
-
-material {
    name = hexagonal1
    ka = (0.0 0.0 0.0)
    kd = (0.4 0.4 0.6)
    ks = (0.2 0.2 0.2)
-   hexagonal = (0.4 0.2 0.5) (0.8 0.2 0.1) 10 10
+   kt = (0.5 0.5 0.5)
+   index = 4
+   shiny = 50
+   hexagonal = (0.4 0.2 0.5) (1 0.2 0.5) 10 10
 }
 
 material {
@@ -23,15 +16,26 @@ material {
    ka = (0.0 0.0 0.0)
    kd = (0.4 0.4 0.6)
    ks = (0.2 0.2 0.2)
-   hexagonal = (0.0 0.0 0.0) (0.8 0.2 0.1) 10 10
+   kt = (1 1 1)
+   index = 2
+   shiny = 50
+   hexagonal = (0.0 0.0 0.0) (1 0.3 0.1) 10 10
+}
+
+material {
+   name = shiny
+   ka = (0.1 0.1 0.1)
+   kd = (0.8 0.7 0.6)
+   ks = (0.2 0.2 0.2)
+   stripe = (0.1 0.1 0.5) (.4 .3 .1) 20 20
 }
 
 material {
    name = flat
    ka = (0.1 0.1 0.1)
    kd = (0.5 0.6 0.4)
-   ks = (0 0 0)
-   checker = (0.9 0.3 0.3) (0.3 0.9 0.3) 10 10
+   ks = (0.0 0.0 0.0)
+   checker = (1.0 0.5 0.3) (0.8 0.3 0.1) 10 10
 }
 
 light {
@@ -58,9 +62,8 @@ pop{}
 
 push{}
   push{}
-    translate { (0 -1.5 0) }
     scale { (10 0.1 30) }
-    box { material = flat }
+    box { material = shiny }
   pop{}
   push {}
    translate { (2 2.5 -4) }
@@ -72,22 +75,25 @@ push{}
   push {}
     rotate { 30 (0 0 1) }
     scale { (15 0.1 30) }
-    box { material = flat }
+    box { material = shiny }
   pop{}
   push {}
     rotate { -30 (0 0 1) }
     scale { (15 0.1 30) }
-    box { material = flat }
+    box { material = shiny }
   pop{}
+  
+  
+  
+  
   
   rotate {15 (1 0 0) }
   translate { (0 0 -30) }
   push{}
-    translate { (0 -1.5 0) }
     scale { (10 0.1 30) }
-    box { material = flat }
+    box { material = shiny }
   pop{}
-  
+
   push {}
     translate { (5 5 -15) }
     sphere { material = hexagonal1 }
@@ -101,22 +107,23 @@ push{}
   push {}
     rotate { 30 (0 0 1) }
     scale { (15 0.1 30) }
-    box { material = flat }
+    box { material = shiny }
   pop{}
   push {}
     rotate { -30 (0 0 1) }
     push{}
       scale { (15 0.1 30) }
-      box { material = flat }
+      box { material = shiny }
     pop{}
   pop{}
+  
+  
   
   rotate {15 (1 0 0) }
   translate { (0 0 -30) }
   push{}
-    translate { (0 -1.5 0) }
     scale { (10 0.1 30) }
-    box { material = flat }
+    box { material = shiny }
   pop{}
   push {}  
     translate { (-2 5 -15 ) }
@@ -126,11 +133,11 @@ push{}
   push {}
     rotate { 30 (0 0 1) }
     scale { (15 0.1 30) }
-    box { material = flat }
+    box { material = shiny }
   pop{}
   push {}
     rotate { -30 (0 0 1) }
     scale { (15 0.1 30) }
-    box { material = flat }
+    box { material = shiny }
   pop{}
 pop{}

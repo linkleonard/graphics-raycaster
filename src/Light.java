@@ -159,8 +159,8 @@ class Light extends RaytracerObject
         Tools.termwiseMul3d(diffuse, tint);
         
         // Attenuate light
-        if (this.direction == null) {
-	        double dsquared = intersection.hitPoint.distanceSquared(r.origin);
+        if (this.position != null) {
+	        double dsquared = intersection.hitPoint.distanceSquared(this.position);
 	        diffuse.scale(1 / (attenuation.x + attenuation.y * Math.sqrt(dsquared) + attenuation.z * dsquared));
         }
         

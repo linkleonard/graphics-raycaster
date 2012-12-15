@@ -38,14 +38,12 @@ class Material extends RaytracerObject
     // Texture repeating factors
     double textureScaleU       = 1.0;
     double textureScaleV       = 1.0;
-
-    // Checker specification
-    Vector3d checkerColor1     = null;
-    Vector3d checkerColor2     = null;
     
-    // Hexagonal specification
-    Vector3d hexColor1     = null;
-    Vector3d hexColor2     = null;
+    // Procedural texture color specification
+    Vector3d texColor1     = null;
+    Vector3d texColor2     = null;
+    
+    String textureType     = null;
 
     // ----------------------------------------------------------------------
 
@@ -93,6 +91,7 @@ class Material extends RaytracerObject
 	addSpecSpecial("texture", "setTextureSpec", "readTextureSpec");
 	addSpecSpecial("checker", "setCheckerSpec", "readCheckerSpec");
 	addSpecSpecial("hexagonal", "setHexSpec", "readHexSpec");
+	addSpecSpecial("stripe", "setStripeSpec", "readStripeSpec");
 
 	// read the content of this object
 	read(tokenizer);
@@ -144,22 +143,27 @@ class Material extends RaytracerObject
     /** Check if any valid texture is present */
     public boolean hasTexture()
     {
-	return textureImage != null || checkerColor1 != null || hexColor1 != null;
+	return textureImage != null || textureType != null;
     }
 
     /** returns the texture color corresponding to the u, v coordinates */
     public Vector3d getTextureColor(double u, double v)
     {
-	if (checkerColor1 != null) {
-	    return getCheckerColor(u,v);
-	} else if (hexColor1 != null) {
+	switch (textureType) {
+	case "checker":
+		return getCheckerColor(u,v);
+	case "hex":
 		return getHexColor(u, v);
-	} else if (textureImage != null) {
-	    return getTextureImageColor(u,v);
-	} else {
-	    // Illegal texture specification
-	    System.err.println("Unknown texture specification");
-	    return null;
+	case "stripe":
+		return getStripeColor(u, v);
+	default:
+		if (textureImage != null)
+			return getTextureImageColor(u,v);
+		else {
+		    // Illegal texture specification
+			System.err.println("Unknown texture specification");
+	    	return null;
+		}
 	}
     }
 
@@ -212,8 +216,9 @@ class Material extends RaytracerObject
     }
     public void setCheckerSpec(Vector v)
     {
-	checkerColor1   = (Vector3d)v.elementAt(0);
-	checkerColor2   = (Vector3d)v.elementAt(1);
+    textureType = "checker";
+	texColor1   = (Vector3d)v.elementAt(0);
+	texColor2   = (Vector3d)v.elementAt(1);
 	textureScaleU   = ((Double)v.elementAt(2)).doubleValue();
 	textureScaleV   = ((Double)v.elementAt(3)).doubleValue();
     }
@@ -222,11 +227,47 @@ class Material extends RaytracerObject
 	double scu = textureScaleU, scv = textureScaleV;
 
 	if ((int)(Math.floor(u * scu) + Math.floor(v * scv)) % 2 == 0) {
-	    return checkerColor1;
+	    return texColor1;
 	} else {
-	    return checkerColor2;
+	    return texColor2;
 	}
     }
+    
+  //------------------------------------------------------------------------
+    // Procedural stripe texture
+
+    public static Vector readStripeSpec(StreamTokenizer tokenizer)
+        throws ParseException, IOException
+    {
+	Vector<Object> v = new Vector<Object>();
+
+	// checker = color1 color2 uScale vScale
+	v.addElement(Parser.readVector3d(tokenizer));
+	v.addElement(Parser.readVector3d(tokenizer));
+	v.addElement(Parser.readDouble(tokenizer));
+	v.addElement(Parser.readDouble(tokenizer));
+
+	return v;
+    }
+    public void setStripeSpec(Vector v)
+    {
+    textureType = "stripe";
+	texColor1   = (Vector3d)v.elementAt(0);
+	texColor2   = (Vector3d)v.elementAt(1);
+	textureScaleU   = ((Double)v.elementAt(2)).doubleValue();
+	textureScaleV   = ((Double)v.elementAt(3)).doubleValue();
+    }
+    public Vector3d getStripeColor(double u, double v)
+    {
+	double scv = textureScaleV;
+
+	if ((int)(Math.floor(v * scv)) % 2 == 0) {
+	    return texColor1;
+	} else {
+	    return texColor2;
+	}
+    }
+    
     
     //------------------------------------------------------------------------
     // Procedural spot texture
@@ -246,8 +287,9 @@ class Material extends RaytracerObject
     }
     public void setHexSpec(Vector v)
     {
-	hexColor1   = (Vector3d)v.elementAt(0);
-	hexColor2   = (Vector3d)v.elementAt(1);
+    textureType = "hex";
+	texColor1   = (Vector3d)v.elementAt(0);
+	texColor2   = (Vector3d)v.elementAt(1);
 	textureScaleU   = ((Double)v.elementAt(2)).doubleValue();
 	textureScaleV   = ((Double)v.elementAt(3)).doubleValue();
     }
@@ -258,14 +300,14 @@ class Material extends RaytracerObject
 	// Clamp to nearest row
 	if (Math.round(u * scu) % 2 == 0) {
 		if (Math.round(v * scv) % 2 == 0)
-			return hexColor1;
+			return texColor1;
 		else
-			return hexColor2;
+			return texColor2;
 	} else {
 		if (Math.round(v * 2 * scv) % 2 == 0)
-			return hexColor2;
+			return texColor2;
 		else
-			return hexColor1;
+			return texColor1;
 	}
     }
 

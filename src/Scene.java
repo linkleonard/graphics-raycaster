@@ -218,8 +218,8 @@ class Scene
         Vector3d color = new Vector3d();
         ISect isect = new ISect();
 
-        Vector3d rayDirection = new Vector3d();
-        rayDirection.set(r.direction);
+        Point3d rayOrigin = new Point3d(r.origin);
+        Vector3d rayDirection = new Vector3d(r.direction);
         
         // Check if the ray hit any object (or recursion depth was exceeded)
         if (depth <= recursionDepth && intersects(r, isect)) {

@@ -1,4 +1,4 @@
-[ YOUR NAME ]
+Leonard Law
 CS 428 - Project 4
 
 =============================================================================
@@ -9,18 +9,17 @@ bug, extension, etc...).  Then, remove any leftover []'s.
 
 Incomplete parts:
 -----------------
-  - [ first part not completed (or "none") ]
-  - [ second one ...]
+
 
 Bugs in code:
 -------------
-  - [ description of known bug (or "none") ]
-  - [ second one ... ]
+  - Adaptive tracing blurs colors oddly with refracted textures
 
 Extensions/extra credit completed:
 ----------------------------------
-  - [ description of first extension (or "none") ]
-  - [ second one ... ]
+  - Adaptive Ray Tracing
+  - Procedural texture "hexagonal", "stripes"
+      doesn't actually make a hexagonal texture though
 
 ================================================================
 
@@ -28,15 +27,23 @@ Methods completed or changed
 ----------------------------
 
 Camera.java
-- pixelRay():
+- pixelRay(): done
 
 Scene.java
-- castRay():
-- intersects():
-- shadowRay():
-- shadowTint():
+- castRay(): done
+- intersects(): done
+- shadowRay(): done
+- shadowTint(): done
+- calculatePixelRay(): taken from render()
+- initialAdaptiveCastRay(): Adaptive cast ray function
+- areColorsSimilar(): uses distance between colors to find how "far" they are
+
 
 Light.java
-- compute():
+- compute(): done
 
-[ ... add any other methods you create/modify ... ]
+
+Material.java
+- constructor: added spec for "hexagonal" material
+- hasTexture: more general
+- set/read/get Hex/Stripe colors
